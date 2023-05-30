@@ -1,13 +1,13 @@
 import express from "express";
 import cors from 'cors';
 import morgan from 'morgan'
-import routes from './Routes/Route.js'
+// import routes from './Routes/Route.js'
 import dotenv from "dotenv"
-import conn from './db/connection.js'
+// import conn from './db/connection.js'
 
 
 //environment file
-dotenv.config({ path: "./config.env" })
+// dotenv.config({ path: "./config.env" })
 
 //variables
 const port = process.env.PORT || 8000;
@@ -21,18 +21,20 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
 
 //use Routes
-app.use("/expense", routes)
+// app.use("/expense", routes)
 
 
 //db connection
-conn.then(db => {
-    if (!db) return process.exit(1);
-    
-    app.listen(
-        port,
-        () => {
-            console.log(`Server is running on ${port} port`);
-        })
+// conn.then(db => {
+//     if (!db) return process.exit(1);
 
-    app.on("error", err => console.log(`Failed to Connection with HTTP server:${err}`))
-})
+
+
+//     app.on("error", err => console.log(`Failed to Connection with HTTP server:${err}`))
+// })
+
+app.listen(
+    port,
+    () => {
+        console.log(`Server is running on ${port} port`);
+    })
