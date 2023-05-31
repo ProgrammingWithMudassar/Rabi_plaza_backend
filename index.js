@@ -16,7 +16,7 @@ const app = express();
 //use Middleware
 app.use(morgan("dev"));
 app.use(cors({ origin: "*" }));
-app.use(express.json({ limit: "50mb", extended: true }));
+app.use(express.json({ limit: "50mb", extended: true })); //By default this is 100kb
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
 
@@ -33,8 +33,4 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 //     app.on("error", err => console.log(`Failed to Connection with HTTP server:${err}`))
 // })
 
-app.listen(
-    port,
-    () => {
-        console.log(`Server is running on ${port} port`);
-    })
+app.listen(port, () => { console.log(`Server is running on ${port} port`) })
