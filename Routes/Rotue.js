@@ -36,45 +36,44 @@ router.post('/Add_Shop', async (req, res) => {
         });
     }
 });
-
-router.put('/Update_Shop/:shopNumber', async (req, res) => {
+router.put('/Update_Shop/:id', async (req, res) => {
     try {
-        const shopNumber = req.params.shopNumber;
-        // Extract data from the request body
-        const {
-            shopSize, mobileNumber, ownerEmail,
-            shopOwner, shopRental, registrationDate, floorNo
-        } = req.body;
-        // Find the shop based on the provided shop number
-        const existingShop = await ShopModel.findOne({ shopNumber });
-
-        if (!existingShop) {
-            return res.status(404).json({ error: 'Shop not found.' });
-        }
-        // Update the shop data
-        existingShop.shopSize = shopSize;
-        existingShop.mobileNumber = mobileNumber;
-        existingShop.ownerEmail = ownerEmail;
-        existingShop.shopOwner = shopOwner;
-        existingShop.shopRental = shopRental;
-        existingShop.registrationDate = registrationDate;
-        existingShop.floorNo = floorNo;
-        // Save the updated shop to the database
-        const updatedShop = await existingShop.save();
-        // Respond with the updated shop
-        res.status(200).json({
-            message: "Shop updated successfully.",
-            success: true,
-            updatedShop
-        });
+      const id = req.params.id;
+      // Extract data from the request body
+      const {
+        shopSize, mobileNumber, ownerEmail,
+        shopOwner, shopRental, registrationDate, floorNo
+      } = req.body;
+      // Find the shop based on the provided ID
+      const existingShop = await ShopModel.findById(id);
+  
+      if (!existingShop) {
+        return res.status(404).json({ error: 'Shop not found.' });
+      }
+      // Update the shop data
+      existingShop.shopSize = shopSize;
+      existingShop.mobileNumber = mobileNumber;
+      existingShop.ownerEmail = ownerEmail;
+      existingShop.shopOwner = shopOwner;
+      existingShop.shopRental = shopRental;
+      existingShop.registrationDate = registrationDate;
+      existingShop.floorNo = floorNo;
+      // Save the updated shop to the database
+      const updatedShop = await existingShop.save();
+      // Respond with the updated shop
+      res.status(200).json({
+        message: "Shop updated successfully.",
+        success: true,
+        updatedShop
+      });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            success: false,
-            error: 'An error occurred while updating the shop.'
-        });
+      console.error(error);
+      res.status(500).json({
+        success: false,
+        error: 'An error occurred while updating the shop.'
+      });
     }
-});
+  });
 
 router.get('/All_Shops', async (req, res) => {
     try {
@@ -92,6 +91,30 @@ router.get('/All_Shops', async (req, res) => {
             error: 'An error occurred while retrieving the shops.'
         });
     }
+});
+
+router.get('/All_Shops/:shopId', async (req, res) => {
+  try {
+      const shopId = req.params.shopId;
+      // Retrieve the shop data from the database based on the provided shop ID
+      const shop = await ShopModel.findById(shopId);
+      
+      if (!shop) {
+          return res.status(404).json({ error: 'Shop not found.' });
+      }
+      
+      // Respond with the retrieved shop data
+      res.status(200).json({
+          success: true,
+          shop
+      });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({
+          success: false,
+          error: 'An error occurred while retrieving the shop.'
+      });
+  }
 });
 
 router.delete('/Delete_Shop/:shopNumber', async (req, res) => {
@@ -115,7 +138,6 @@ router.delete('/Delete_Shop/:shopNumber', async (req, res) => {
         });
     }
 });
-
 
 // Update the rent for a shop by shopNumber
 router.put('/shops/:shopNumber/rent', async (req, res) => {
