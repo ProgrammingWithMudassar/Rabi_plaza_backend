@@ -36,6 +36,9 @@ const NewShopSchema = new mongoose.Schema({
   floorNo: {
     type: String,
   },
+  ShopRent:{
+    type: String,
+  },
   rent: [RentSchema],
 });
 
