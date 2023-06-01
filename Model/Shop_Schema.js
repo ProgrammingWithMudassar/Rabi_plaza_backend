@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
-import validator from "validator";
 
-const userSchema = new mongoose.Schema({
+const NewShopSchema = new mongoose.Schema({
     shopNumber: {
     type: String,
   },
@@ -28,6 +27,6 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-const userModel = new mongoose.model("User", userSchema);
+const ShopModel = new mongoose.model("NewShopSchema", NewShopSchema);
 
-export default userModel;
+export default ShopModel;
