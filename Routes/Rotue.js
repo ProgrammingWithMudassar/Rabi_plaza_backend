@@ -42,7 +42,6 @@ router.post('/Add_Shop', async (req, res) => {
     }
 });
 
-
 router.put('/Update_Shop/:shopNumber', async (req, res) => {
     try {
         const shopNumber = req.params.shopNumber;
@@ -87,8 +86,6 @@ router.put('/Update_Shop/:shopNumber', async (req, res) => {
     }
 });
 
-
-
 router.get('/All_Shops', async (req, res) => {
     try {
         // Retrieve all shop data from the database
@@ -107,7 +104,5 @@ router.get('/All_Shops', async (req, res) => {
         });
     }
 });
-
-
 
 export default router;
