@@ -1,5 +1,16 @@
 import mongoose from "mongoose";
 
+const RentSchema = new mongoose.Schema({
+  rent_paid_date: {
+    type: Date,
+    default: Date.now,
+  },
+  rent_paid_amount: {
+    type: Number,
+    required: true,
+  },
+});
+  
 const NewShopSchema = new mongoose.Schema({
     shopNumber: {
     type: String,
@@ -25,6 +36,7 @@ const NewShopSchema = new mongoose.Schema({
   floorNo: {
     type: String,
   },
+  rent: [RentSchema],
 });
 
 const ShopModel = new mongoose.model("NewShopSchema", NewShopSchema);
