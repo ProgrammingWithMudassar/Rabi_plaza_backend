@@ -3,7 +3,7 @@ import cors from 'cors';
 import morgan from 'morgan'
 import mongoose from 'mongoose';
 import dotenv from "dotenv"
-import routes from './Routes/Rotue.js'
+import router from './Routes/Rotue.js'
 
 
 dotenv.config({ path: "./config.env" })
@@ -17,7 +17,7 @@ app.use(cors({ origin: "*" }));
 app.use(express.json({ limit: "50mb", extended: true })); //By default this is 100kb
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
-app.use("/api", routes)
+// app.use("/api", router)
 
 
 
@@ -31,4 +31,4 @@ mongoose.connect(process.env.ALTAS_URI,
     () => app.listen(port, () => console.log(`Server is runing on port: ${port}`))
 ).catch((error) => {
     console.log(error.message);
-});
+});1 

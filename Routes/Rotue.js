@@ -1,10 +1,9 @@
 import express from 'express';
-import {
-    getAllProducts
-} from '../Controller/Shop_Controller'
 
 const router = express.Router();
 
-router.get("/get",getAllProducts);
+router.get("/get",async (req,res)=>{
+    res.send({ message: "Somthing went wrong." });
+});
 
 export default router;
