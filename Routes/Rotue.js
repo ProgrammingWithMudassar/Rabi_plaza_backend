@@ -41,7 +41,7 @@ router.put('/Update_Shop/:id', async (req, res) => {
     const id = req.params.id;
     // Extract data from the request body
     const {
-      shopSize, mobileNumber, ownerEmail,ShopRent,
+      shopSize, mobileNumber, ownerEmail,ShopRent,shopNumber,
       shopOwner, shopRental, registrationDate, floorNo
     } = req.body;
     // Find the shop based on the provided ID
@@ -51,6 +51,7 @@ router.put('/Update_Shop/:id', async (req, res) => {
       return res.status(404).json({ error: 'Shop not found.' });
     }
     // Update the shop data
+    existingShop.shopNumber = shopNumber;
     existingShop.shopSize = shopSize;
     existingShop.mobileNumber = mobileNumber;
     existingShop.ownerEmail = ownerEmail;
