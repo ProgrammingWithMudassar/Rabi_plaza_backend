@@ -9,6 +9,10 @@ const RentSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  rent_rmaining_amount: {
+    type: Number,
+    required: true,
+  },
 });
   
 const NewShopSchema = new mongoose.Schema({
@@ -39,10 +43,7 @@ const NewShopSchema = new mongoose.Schema({
   ShopRent:{
     type: String,
   },
-  rent: {
-    type: Array,
-    default:[]
-  },
+  rent: [RentSchema],
 });
 
 const ShopModel = new mongoose.model("NewShopSchema", NewShopSchema);
