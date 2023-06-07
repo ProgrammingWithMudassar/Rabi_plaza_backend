@@ -8,7 +8,7 @@ router.post('/Add_Shop', async (req, res) => {
     // Extract data from the request body
     const {
       shopNumber, shopSize, mobileNumber, ownerEmail,
-      shopOwner, shopRental, registrationDate, floorNo,ShopRent
+      shopOwner, shopRental, registrationDate, floorNo, ShopRent
     } = req.body;
 
     const existingShop = await ShopModel.findOne({ shopNumber });
@@ -18,7 +18,7 @@ router.post('/Add_Shop', async (req, res) => {
     // Create a new shop instance based on the schema
     const newShop = new ShopModel({
       shopNumber, shopSize, mobileNumber, ownerEmail,
-      shopOwner, shopRental, registrationDate, floorNo,ShopRent
+      shopOwner, shopRental, registrationDate, floorNo, ShopRent
     });
     // Save the new shop to the database
     const savedShop = await newShop.save();
@@ -41,7 +41,7 @@ router.put('/Update_Shop/:id', async (req, res) => {
     const id = req.params.id;
     // Extract data from the request body
     const {
-      shopSize, mobileNumber, ownerEmail,ShopRent,shopNumber,
+      shopSize, mobileNumber, ownerEmail, ShopRent, shopNumber,
       shopOwner, shopRental, registrationDate, floorNo
     } = req.body;
     // Find the shop based on the provided ID
@@ -82,9 +82,15 @@ router.get('/All_Shops', async (req, res) => {
   try {
     // Retrieve all shop data from the database
     const allShops = await ShopModel.find();
+
+    // Calculate the total number of registered shops
+    const totalNumberOfShops = await ShopModel.countDocuments();
+
+
     // Respond with the retrieved shop data
     res.status(200).json({
       success: true,
+      totalNumberOfShops: totalNumberOfShops,
       shops: allShops
     });
   } catch (error) {
@@ -146,7 +152,7 @@ router.delete('/Delete_Shop/:shopNumber', async (req, res) => {
 router.put('/shops/:shopNumber/rent', async (req, res) => {
   try {
     const { shopNumber } = req.params;
-    const { rent_paid_amount,rent_rmaining_amount, rent_paid_date } = req.body;
+    const { rent_paid_amount, rent_rmaining_amount, rent_paid_date } = req.body;
 
     // Find the shop by shopNumber
     const shop = await ShopModel.findOne({ shopNumber });
@@ -156,7 +162,7 @@ router.put('/shops/:shopNumber/rent', async (req, res) => {
     }
 
     // Add the rent payment to the rent array
-    shop.rent.push({ rent_paid_amount, rent_paid_date,rent_rmaining_amount });
+    shop.rent.push({ rent_paid_amount, rent_paid_date, rent_rmaining_amount });
 
     // Update the remaining rent
     shop.Remaining_Rent -= rent_paid_amount;
