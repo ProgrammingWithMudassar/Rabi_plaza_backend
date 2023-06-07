@@ -102,6 +102,7 @@ router.get('/All_Shops', async (req, res) => {
   }
 });
 
+
 router.get('/All_Shops/:shopId', async (req, res) => {
   try {
     const shopId = req.params.shopId;
