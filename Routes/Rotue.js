@@ -146,7 +146,7 @@ router.delete('/Delete_Shop/:shopNumber', async (req, res) => {
 router.put('/shops/:shopNumber/rent', async (req, res) => {
   try {
     const { shopNumber } = req.params;
-    const { rent_paid_amount, rent_paid_date } = req.body;
+    const { rent_paid_amount,rent_rmaining_amount, rent_paid_date } = req.body;
 
     // Find the shop by shopNumber
     const shop = await ShopModel.findOne({ shopNumber });
@@ -156,7 +156,7 @@ router.put('/shops/:shopNumber/rent', async (req, res) => {
     }
 
     // Add the rent payment to the rent array
-    shop.rent.push({ rent_paid_amount, rent_paid_date });
+    shop.rent.push({ rent_paid_amount, rent_paid_date,rent_rmaining_amount });
 
     // Update the remaining rent
     shop.Remaining_Rent -= rent_paid_amount;
