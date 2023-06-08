@@ -7,7 +7,7 @@ router.post('/Add_Shop', async (req, res) => {
   try {
     // Extract data from the request body
     const {
-      shopNumber, shopSize, mobileNumber, ownerEmail,
+      shopNumber, shopSize, mobileNumber, 
       shopOwner, shopRental, registrationDate, floorNo, ShopRent
     } = req.body;
 
@@ -17,7 +17,7 @@ router.post('/Add_Shop', async (req, res) => {
     }
     // Create a new shop instance based on the schema
     const newShop = new ShopModel({
-      shopNumber, shopSize, mobileNumber, ownerEmail,
+      shopNumber, shopSize, mobileNumber, 
       shopOwner, shopRental, registrationDate, floorNo, ShopRent
     });
     // Save the new shop to the database
@@ -41,9 +41,10 @@ router.put('/Update_Shop/:id', async (req, res) => {
     const id = req.params.id;
     // Extract data from the request body
     const {
-      shopSize, mobileNumber, ownerEmail, ShopRent, shopNumber,
+      shopSize, mobileNumber,  ShopRent, shopNumber,
       shopOwner, shopRental, registrationDate, floorNo
     } = req.body;
+    console.log(req.body);
     // Find the shop based on the provided ID
     const existingShop = await ShopModel.findById(id);
 
@@ -54,7 +55,6 @@ router.put('/Update_Shop/:id', async (req, res) => {
     existingShop.shopNumber = shopNumber;
     existingShop.shopSize = shopSize;
     existingShop.mobileNumber = mobileNumber;
-    existingShop.ownerEmail = ownerEmail;
     existingShop.shopOwner = shopOwner;
     existingShop.shopRental = shopRental;
     existingShop.registrationDate = registrationDate;
@@ -80,17 +80,9 @@ router.put('/Update_Shop/:id', async (req, res) => {
 
 router.get('/All_Shops', async (req, res) => {
   try {
-    // Retrieve all shop data from the database
     const allShops = await ShopModel.find();
-
-    // Calculate the total number of registered shops
-    const totalNumberOfShops = await ShopModel.countDocuments();
-
-
-    // Respond with the retrieved shop data
     res.status(200).json({
       success: true,
-      totalNumberOfShops: totalNumberOfShops,
       shops: allShops
     });
   } catch (error) {

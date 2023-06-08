@@ -25,9 +25,6 @@ const NewShopSchema = new mongoose.Schema({
   mobileNumber: {
     type: String,
   },
-  rentalEmail: {
-    type: String,
-  },
   shopOwner: {
     type: String,
   },
