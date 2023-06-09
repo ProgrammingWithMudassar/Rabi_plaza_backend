@@ -1,5 +1,6 @@
 import express from 'express';
 import ShopModel from '../Model/Shop_Schema.js';
+import AuthModel from '../Model/Auth.js';
 
 const router = express.Router();
 
@@ -7,7 +8,7 @@ router.post('/Add_Shop', async (req, res) => {
   try {
     // Extract data from the request body
     const {
-      shopNumber, shopSize, mobileNumber, 
+      shopNumber, shopSize, mobileNumber,
       shopOwner, shopRental, registrationDate, floorNo, ShopRent
     } = req.body;
 
@@ -17,7 +18,7 @@ router.post('/Add_Shop', async (req, res) => {
     }
     // Create a new shop instance based on the schema
     const newShop = new ShopModel({
-      shopNumber, shopSize, mobileNumber, 
+      shopNumber, shopSize, mobileNumber,
       shopOwner, shopRental, registrationDate, floorNo, ShopRent
     });
     // Save the new shop to the database
@@ -41,7 +42,7 @@ router.put('/Update_Shop/:id', async (req, res) => {
     const id = req.params.id;
     // Extract data from the request body
     const {
-      shopSize, mobileNumber,  ShopRent, shopNumber,
+      shopSize, mobileNumber, ShopRent, shopNumber,
       shopOwner, shopRental, registrationDate, floorNo
     } = req.body;
     console.log(req.body);
@@ -170,7 +171,41 @@ router.put('/shops/:shopNumber/rent', async (req, res) => {
   }
 });
 
+router.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const user = await AuthModel.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
 
+    if (user.password !== password) {
+      return res.status(401).json({ error: 'Incorrect password' });
+    }
+
+    res.status(200).json({ success: true }); // Login successful
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.post('/register', async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const existingUser = await AuthModel.findOne({ username });
+    if (existingUser) {
+      return res.status(409).json({ error: 'User already exists' });
+    }
+    const newUser = new AuthModel({
+      username,
+      password,
+    });
+    await newUser.save();
+    res.json({ success: true, message: 'User registered successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 
 
