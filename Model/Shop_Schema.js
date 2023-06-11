@@ -38,6 +38,9 @@ const NewShopSchema = new mongoose.Schema({
   floorNo: {
     type: String,
   },
+  Monthly_rent:{
+    type: String,
+  },
   ShopRent:{
     type: String,
   },

@@ -8,7 +8,7 @@ router.post('/Add_Shop', async (req, res) => {
   try {
     // Extract data from the request body
     const {
-      shopNumber, shopSize, mobileNumber,
+      shopNumber, shopSize, mobileNumber,Monthly_rent,
       shopOwner, shopRental, registrationDate, floorNo, ShopRent
     } = req.body;
 
@@ -18,7 +18,7 @@ router.post('/Add_Shop', async (req, res) => {
     }
     // Create a new shop instance based on the schema
     const newShop = new ShopModel({
-      shopNumber, shopSize, mobileNumber,
+      shopNumber, shopSize, mobileNumber,Monthly_rent,
       shopOwner, shopRental, registrationDate, floorNo, ShopRent
     });
     // Save the new shop to the database
