@@ -12,9 +12,10 @@ const RentSchema = new mongoose.Schema({
   rent_rmaining_amount: {
     type: Number,
     required: true,
+    default: 0,
   },
 });
-  
+
 const NewShopSchema = new mongoose.Schema({
     shopNumber: {
     type: String,
@@ -40,8 +41,9 @@ const NewShopSchema = new mongoose.Schema({
   ShopRent:{
     type: String,
   },
-  remaining_rent:{
+  shop_remaining_rent:{
     type: String,
+    default: 0,
   },
   rent: [RentSchema],
 });

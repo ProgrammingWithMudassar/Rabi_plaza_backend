@@ -142,32 +142,46 @@ router.delete('/Delete_Shop/:shopNumber', async (req, res) => {
   }
 });
 
-// Update the rent for a shop by shopNumber
-router.put('/shops/:shopNumber/rent', async (req, res) => {
-  try {
-    const { shopNumber } = req.params;
-    const { rent_paid_amount, rent_rmaining_amount, rent_paid_date } = req.body;
 
-    // Find the shop by shopNumber
-    const shop = await ShopModel.findOne({ shopNumber });
+router.put("/rent/:shop_id", async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    const { date, paidRent } = req.body;
+
+    const shop = await ShopModel.findById(shop_id);
 
     if (!shop) {
-      return res.status(404).json({ error: 'Shop not found' });
+      return res.status(404).json({ error: "Shop not found" });
     }
 
-    // Add the rent payment to the rent array
-    shop.rent.push({ rent_paid_amount, rent_paid_date, rent_rmaining_amount });
+    const remainingRent = parseFloat(shop.shop_remaining_rent) + parseFloat(shop.ShopRent);
+    console.log("Total Remaining Rent:", remainingRent);
 
-    // Update the remaining rent
-    shop.Remaining_Rent -= rent_paid_amount;
+    const parsedPaidRent = parseFloat(paidRent);
+    const calculatedRemainingRent = remainingRent - parsedPaidRent;
+    console.log("Calculated Remaining Rent:", calculatedRemainingRent);
 
-    // Save the updated shop
-    const updatedShop = await shop.save();
+    if (calculatedRemainingRent < 0) {
+      return res.status(400).json({ error: "Payment is insufficient" });
+    }
 
-    res.status(200).json({ message: 'Rent updated successfully', shop: updatedShop });
+    const rentPayment = {
+      rent_paid_date: date,
+      rent_paid_amount: parsedPaidRent,
+      rent_remaining_amount: calculatedRemainingRent,
+    };
+
+    if (calculatedRemainingRent >= 0) {
+      shop.rent.push(rentPayment);
+      shop.shop_remaining_rent = calculatedRemainingRent.toString();
+      shop.ShopRent=0
+      await shop.save();
+    }
+
+    res.json({ message: "Rent payment updated successfully", shop });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'An error occurred while updating the rent' });
+    res.status(500).json({ error: "Failed to update rent payment" });
   }
 });
 
