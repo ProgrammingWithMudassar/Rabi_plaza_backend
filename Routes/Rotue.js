@@ -18,7 +18,7 @@ router.post('/Add_Shop', async (req, res) => {
     }
     // Create a new shop instance based on the schema
     const newShop = new ShopModel({
-      shopNumber, shopSize, mobileNumber,Monthly_rent,
+      shopNumber, shopSize, mobileNumber,Monthly_rent:ShopRent,
       shopOwner, shopRental, registrationDate, floorNo, ShopRent
     });
     // Save the new shop to the database
@@ -42,7 +42,7 @@ router.put('/Update_Shop/:id', async (req, res) => {
     const id = req.params.id;
     // Extract data from the request body
     const {
-      shopSize, mobileNumber, ShopRent, shopNumber,
+      shopSize, mobileNumber, Monthly_rent, shopNumber,
       shopOwner, shopRental, registrationDate, floorNo
     } = req.body;
     console.log(req.body);
@@ -60,7 +60,7 @@ router.put('/Update_Shop/:id', async (req, res) => {
     existingShop.shopRental = shopRental;
     existingShop.registrationDate = registrationDate;
     existingShop.floorNo = floorNo;
-    existingShop.ShopRent = ShopRent;
+    existingShop.Monthly_rent= Monthly_rent;
 
     // Save the updated shop to the database
     const updatedShop = await existingShop.save();
