@@ -221,6 +221,25 @@ router.post('/register', async (req, res) => {
   }
 });
 
+router.post("/updateMonthlyRent", async (req, res) => {
+  try {
+    const currentDate = new Date();
+    if (currentDate.getDate() === 1) {
+      const shops = await ShopModel.find();
+      for (const shop of shops) {
+        shop.shop_remaining_rent += parseFloat(shop.Monthly_rent);
+        await shop.save();
+      }
+      return res.status(200).json({ message: "Monthly rent updated successfully." });
+    } else {
+      return res.status(200).json({ message: "Not the first day of the month. Monthly rent not updated." });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "An error occurred while updating monthly rent." });
+  }
+});
+
 
 
 export default router;

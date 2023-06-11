@@ -4,7 +4,8 @@ import morgan from 'morgan'
 import mongoose from 'mongoose';
 import dotenv from "dotenv"
 import router from './Routes/Rotue.js'
-
+import cron from "node-cron";
+import axios from "axios";
 
 dotenv.config({ path: "./config.env" })
 
@@ -21,14 +22,28 @@ app.use("/api", router)
 
 
 
-
-mongoose.connect(process.env.ALTAS_URI,
-    {
+mongoose
+    .connect(process.env.ALTAS_URI, {
         useNewUrlParser: true,
-        useUnifiedTopology: true
-    }
-).then(
-    () => app.listen(port, () => console.log(`Server is runing on port: ${port}`))
-).catch((error) => {
-    console.log(error.message);
-});1 
+        useUnifiedTopology: true,
+    })
+    .then(() => {
+        console.log("Connected to MongoDB");
+
+        // Schedule API call on the first day of every month at 12:00 AM
+        cron.schedule("0 0 1 * *", async () => {
+            try {
+                const response = await axios.post("http://localhost:" + port + "/api/updateMonthlyRent");
+                console.log(response.data.message);
+            } catch (error) {
+                console.log("An error occurred while calling the API:", error.message);
+            }
+        });
+
+        app.listen(port, () => {
+            console.log(`Server is running on port: ${port}`);
+        });
+    })
+    .catch((error) => {
+        console.log("Error connecting to MongoDB:", error.message);
+    });
