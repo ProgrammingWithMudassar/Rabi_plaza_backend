@@ -40,6 +40,9 @@ const NewShopSchema = new mongoose.Schema({
   ShopRent:{
     type: String,
   },
+  remaining_rent:{
+    type: String,
+  },
   rent: [RentSchema],
 });
 
