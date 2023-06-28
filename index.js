@@ -16,7 +16,7 @@ const app = express();
 app.use(morgan("dev"));
 app.use(cors({ origin: "*" }));
 app.use(express.json({ limit: "50mb", extended: true })); //By default this is 100kb
-app.use(express.urlencoded({ limit: "50mb", extended: true }));
+// app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
 app.use("/api", router)
 

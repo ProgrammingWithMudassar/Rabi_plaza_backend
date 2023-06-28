@@ -240,7 +240,7 @@ router.post("/updateMonthlyRent", async (req, res) => {
   }
 });
 
-router.post('/Add_Shop_For_'), async (req, res) => {
+router.post('/Add_Rent_Shop', async (req, res) => {
   try {
     // Extract data from the request body
     const {
@@ -272,7 +272,7 @@ router.post('/Add_Shop_For_'), async (req, res) => {
       error: 'An error occurred while creating the shop.'
     });
   }
-}
+})
 
 router.get('/All_Rent_Shops', async (req, res) => {
   try {
