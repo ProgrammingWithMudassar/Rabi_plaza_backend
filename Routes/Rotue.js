@@ -5,6 +5,104 @@ import RentShopModel from '../Model/Rent_shop.js';
 
 const router = express.Router();
 
+
+
+const lastUpdatedFile = 'last_updated.json';
+
+
+router.put('/updateMaintenanceCharges',async(req,res)=>{
+  try {
+    const allShops = await ShopModel.find();
+
+    
+    let rentUpdated = false;
+
+    
+    for (const shop of allShops) {
+    
+      const currentDate = new Date();
+      console.log(currentDate)
+      const currentMonth = currentDate.getMonth();
+      const lastRemainingRentUpdatedMonth = new Date(shop.last_updated_shop_remaining_rent).getMonth();
+
+      if (currentMonth !== lastRemainingRentUpdatedMonth) {
+        
+        const monthlyRent = parseInt(shop.Monthly_rent);
+        const remainingRent = parseInt(shop.shop_remaining_rent);
+        const updatedRemainingRent = remainingRent + monthlyRent;
+
+
+        shop.shop_remaining_rent = updatedRemainingRent;
+        shop.last_updated_shop_remaining_rent = currentDate;
+        await shop.save();
+
+        
+        rentUpdated = true;
+      }
+    }
+
+    if (rentUpdated) {
+      return res.json({ msg: "Rent Updated" });
+    } else {
+      return res.json({ msg: "New Month Not Started" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      error: 'An error occurred while retrieving the shops.'
+    });
+  }
+})
+
+
+router.put('/updateRent',async(req,res)=>{
+  try {
+    const allShops = await RentShopModel.find();
+
+    
+    let rentUpdated = false;
+
+    
+    for (const shop of allShops) {
+    
+      const currentDate = new Date();
+      console.log(currentDate)
+      const currentMonth = currentDate.getMonth();
+      const lastRemainingRentUpdatedMonth = new Date(shop.last_updated_shop_remaining_rent).getMonth();
+
+      if (currentMonth !== lastRemainingRentUpdatedMonth) {
+        
+        const monthlyRent = parseInt(shop.Monthly_rent);
+        const remainingRent = parseInt(shop.shop_remaining_rent);
+        const updatedRemainingRent = remainingRent + monthlyRent;
+
+
+        shop.shop_remaining_rent = updatedRemainingRent;
+        shop.last_updated_shop_remaining_rent = currentDate;
+        await shop.save();
+
+        
+        rentUpdated = true;
+      }
+    }
+
+    if (rentUpdated) {
+      return res.json({ msg: "Rent Updated" });
+    } else {
+      return res.json({ msg: "New Month Not Started" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      error: 'An error occurred while retrieving the shops.'
+    });
+  }
+})
+
+
+
 router.post('/Add_Shop', async (req, res) => {
   try {
     // Extract data from the request body
@@ -20,7 +118,7 @@ router.post('/Add_Shop', async (req, res) => {
     // Create a new shop instance based on the schema
     const newShop = new ShopModel({
       shopNumber, shopSize, mobileNumber, Monthly_rent: ShopRent,
-      shopOwner, shopRental, registrationDate, floorNo, ShopRent
+      shopOwner, shopRental, registrationDate, floorNo, ShopRent,shop_remaining_rent:ShopRent
     });
     // Save the new shop to the database
     const savedShop = await newShop.save();
@@ -116,11 +214,11 @@ router.get('/All_Shops/:shopId', async (req, res) => {
     console.error(error);
     res.status(500).json({
       success: false,
-      error: 'An error occurred while retrieving the shop.'
+      error: 'An error occurred while retrieving the shop.' 
     });
   }
 });
-
+  
 router.delete('/Delete_Shop/:shopNumber', async (req, res) => {
   try {
     const shopNumber = req.params.shopNumber;
@@ -143,7 +241,7 @@ router.delete('/Delete_Shop/:shopNumber', async (req, res) => {
   }
 });
 
-router.put("/rent/:shop_id", async (req, res) => {
+router.put("/charges/:shop_id", async (req, res) => {
   try {
     const { shop_id } = req.params;
     const { date, paidRent } = req.body;
@@ -154,7 +252,7 @@ router.put("/rent/:shop_id", async (req, res) => {
       return res.status(404).json({ error: "Shop not found" });
     }
 
-    const remainingRent = parseFloat(shop.shop_remaining_rent) + parseFloat(shop.ShopRent);
+    const remainingRent = parseFloat(shop.shop_remaining_rent) ;
     console.log("Total Remaining Rent:", remainingRent);
 
     const parsedPaidRent = parseFloat(paidRent);
@@ -168,15 +266,61 @@ router.put("/rent/:shop_id", async (req, res) => {
     const rentPayment = {
       rent_paid_date: date,
       rent_paid_amount: parsedPaidRent,
-      rent_remaining_amount: calculatedRemainingRent,
+      rent_rmaining_amount: calculatedRemainingRent,
     };
-
+   
     if (calculatedRemainingRent >= 0) {
       shop.rent.push(rentPayment);
       shop.shop_remaining_rent = calculatedRemainingRent.toString();
       shop.ShopRent = 0
       await shop.save();
     }
+
+    
+
+    res.json({ message: "Maintenance Charges payment updated successfully", shop });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to update rent payment" });
+  }
+});
+
+router.put("/rent/:shop_id", async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    const { date, paidRent } = req.body;
+
+    const shop = await RentShopModel.findById(shop_id);
+
+    if (!shop) {
+      return res.status(404).json({ error: "Shop not found" });
+    }
+
+    const remainingRent = parseFloat(shop.shop_remaining_rent) ;
+    console.log("Total Remaining Rent:", remainingRent);
+
+    const parsedPaidRent = parseFloat(paidRent);
+    const calculatedRemainingRent = remainingRent - parsedPaidRent;
+    console.log("Calculated Remaining Rent:", calculatedRemainingRent);
+
+    if (calculatedRemainingRent < 0) {
+      return res.status(400).json({ error: "Payment is insufficient" });
+    }
+
+    const rentPayment = {
+      rent_paid_date: date,
+      rent_paid_amount: parsedPaidRent,
+      rent_rmaining_amount: calculatedRemainingRent,
+    };
+   
+    if (calculatedRemainingRent >= 0) {
+      shop.rent.push(rentPayment);
+      shop.shop_remaining_rent = calculatedRemainingRent.toString();
+      shop.ShopRent = 0
+      await shop.save();
+    }
+
+    
 
     res.json({ message: "Rent payment updated successfully", shop });
   } catch (error) {
@@ -255,7 +399,7 @@ router.post('/Add_Rent_Shop', async (req, res) => {
     // Create a new shop instance based on the schema
     const newShop = new RentShopModel({
       shopNumber, shopSize, mobileNumber, Monthly_rent: ShopRent,
-      shopOwner, shopRental, registrationDate, floorNo, ShopRent
+      shopOwner, shopRental, registrationDate, floorNo, ShopRent,shop_remaining_rent:ShopRent
     });
     // Save the new shop to the database
     const savedShop = await newShop.save();

@@ -47,7 +47,11 @@ const NewShopSchema = new mongoose.Schema({
   },
   shop_remaining_rent:{
     type: String,
-    default: 0,
+    
+  },
+  last_updated_shop_remaining_rent: {
+    type: Date,
+    default:null
   },
   rent: [RentSchema],
 });
