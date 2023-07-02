@@ -53,6 +53,9 @@ const NewShopSchema = new mongoose.Schema({
     type: Date,
     default:null
   },
+  zero_remaining_charges_date:{
+    type:Date
+  },
   rent: [RentSchema],
 });
 

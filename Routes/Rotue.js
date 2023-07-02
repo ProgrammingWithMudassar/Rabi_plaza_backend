@@ -2,6 +2,11 @@ import express from 'express';
 import ShopModel from '../Model/Shop_Schema.js';
 import AuthModel from '../Model/Auth.js';
 import RentShopModel from '../Model/Rent_shop.js';
+import Expenses from '../Model/Expenses.js'
+import mongoose, { ObjectId } from 'mongoose';
+
+
+
 
 const router = express.Router();
 
@@ -76,7 +81,20 @@ router.put('/updateRent',async(req,res)=>{
         const monthlyRent = parseInt(shop.Monthly_rent);
         const remainingRent = parseInt(shop.shop_remaining_rent);
         const updatedRemainingRent = remainingRent + monthlyRent;
-
+if(updatedRemainingRent==0){
+  ShopModel.findOneAndUpdate(
+    { _id: shop_id },
+    { $set: { zero_remaining_charges_date: date } },
+    { upsert: true, new: true }
+  )
+    .then(updatedDocument => {
+      console.log('Document updated successfully');
+      console.log('Updated document:', updatedDocument);
+    })
+    .catch(err => {
+      console.error('Error updating document:', err);
+    });
+}
 
         shop.shop_remaining_rent = updatedRemainingRent;
         shop.last_updated_shop_remaining_rent = currentDate;
@@ -262,6 +280,21 @@ router.put("/charges/:shop_id", async (req, res) => {
     if (calculatedRemainingRent < 0) {
       return res.status(400).json({ error: "Payment is insufficient" });
     }
+    
+    if (calculatedRemainingRent === 0) {
+      ShopModel.findOneAndUpdate(
+        { _id: shop_id },
+        { $set: { zero_remaining_charges_date: date } },
+        { upsert: true, new: true }
+      )
+        .then(updatedDocument => {
+          console.log('Document updated successfully');
+          console.log('Updated document:', updatedDocument);
+        })
+        .catch(err => {
+          console.error('Error updating document:', err);
+        });
+    }
 
     const rentPayment = {
       rent_paid_date: date,
@@ -305,6 +338,20 @@ router.put("/rent/:shop_id", async (req, res) => {
 
     if (calculatedRemainingRent < 0) {
       return res.status(400).json({ error: "Payment is insufficient" });
+    }
+    if (calculatedRemainingRent === 0) {
+      RentShopModel.findOneAndUpdate(
+        { _id: shop_id },
+        { $set: { zero_remaining_rent_date: date } },
+        { upsert: true, new: true }
+      )
+        .then(updatedDocument => {
+          console.log('Document updated successfully');
+          console.log('Updated document:', updatedDocument);
+        })
+        .catch(err => {
+          console.error('Error updating document:', err);
+        });
     }
 
     const rentPayment = {
@@ -553,4 +600,81 @@ router.put("/Rent_Shop/:shop_id", async (req, res) => {
     res.status(500).json({ error: "Failed to update rent payment" });
   }
 });
+
+router.post('/addexpense',async(req,res)=>{
+  const { date, expenseName, amount } = req.body;
+  const foundExpense = await Expenses.findOne({ date });
+  
+  if (foundExpense) {
+    // If the expense exists, update the items array by adding multiple expenses
+    await Expenses.updateOne(
+      { date },
+      { $push: { items: { $each: [{ expenseName, amount }] } } }
+    )
+      .then(() => {
+        console.log('Items added successfully');
+        res.json({ msg: 'Expenses Added' });
+      })
+      .catch(err => {
+        console.error('Error updating document:', err);
+        res.status(500).json({ error: 'Internal server error' });
+      });
+  } else {
+    const expense = new Expenses({ date, items: [{ expenseName, amount }] });
+  
+    expense.save()
+      .then(() => {
+        console.log('Document created successfully');
+        res.json({ msg: 'Expense Added' });
+      })
+      .catch(err => {
+        console.error('Error creating document:', err);
+        res.status(500).json({ error: 'Internal server error' });
+      });
+  }
+  
+})
+router.delete("/deleteexpense/:id/items/:itemId", async (req, res) => {
+  try {
+    const { id, itemId } = req.params;
+
+    
+    const expense = await Expenses.findById(id);
+
+    if (!expense) {
+      return res.status(404).json({ message: "Expense not found" });
+    }
+
+    
+    const itemIndex = expense.items.findIndex((item) => item._id.toString() === itemId);
+
+    if (itemIndex === -1) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    
+    expense.items.splice(itemIndex, 1);
+
+    
+    await expense.save();
+
+    return res.json({ message: "Item deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get('/getexpenses/:date',async(req,res)=>{
+  try {
+    const {date}=req.params
+    const expenses = await Expenses.find({date});
+
+    return res.json(expenses);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+
+})
 export default router;
