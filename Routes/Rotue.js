@@ -670,7 +670,19 @@ router.get('/getexpenses/:date',async(req,res)=>{
     const {date}=req.params
     const expenses = await Expenses.find({date});
 
-    return res.json(expenses);
+    return res.json({expenses});
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+
+})
+router.get('/getallexpenses',async(req,res)=>{
+  try {
+    
+    const expenses = await Expenses.find({});
+
+    return res.json({expenses});
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Internal server error" });
