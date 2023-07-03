@@ -602,14 +602,14 @@ router.put("/Rent_Shop/:shop_id", async (req, res) => {
 });
 
 router.post('/addexpense',async(req,res)=>{
-  const { date, expenseName, amount } = req.body;
+  const { date, expenseName, amount,description } = req.body;
   const foundExpense = await Expenses.findOne({ date });
   
   if (foundExpense) {
     // If the expense exists, update the items array by adding multiple expenses
     await Expenses.updateOne(
       { date },
-      { $push: { items: { $each: [{ expenseName, amount }] } } }
+      { $push: { items: { $each: [{ expenseName, amount ,description}] } } }
     )
       .then(() => {
         console.log('Items added successfully');
@@ -620,7 +620,7 @@ router.post('/addexpense',async(req,res)=>{
         res.status(500).json({ error: 'Internal server error' });
       });
   } else {
-    const expense = new Expenses({ date, items: [{ expenseName, amount }] });
+    const expense = new Expenses({ date, items: [{ expenseName, amount,description }] });
   
     expense.save()
       .then(() => {

@@ -14,6 +14,9 @@ const ExpenseSchema = new mongoose.Schema({
         },
         amount:{
             type:String
+        },
+        description:{
+          type:String
         }
     }
   ]
